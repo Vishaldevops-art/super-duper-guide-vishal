@@ -1,10 +1,11 @@
-name: Terraform Basic
+name: Terraform OIDC Pipeline
 
 on:
-#   push:
-#     branches:
-#       - main
-  workflow_dispatch:   # 👈 YE ADD KAR (manual trigger)
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # 🔥 OIDC ke liye must
+  contents: read
 
 jobs:
   terraform:
@@ -13,6 +14,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
